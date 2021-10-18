@@ -1,0 +1,37 @@
+{{template "base" .}}
+
+{{define "title"}}Домашняя страница{{end}}
+
+{{define "main"}}
+    <h2>Последние заказы</h2>
+    {{if .ProductTypes}}
+        Тип изделия:
+        <form>
+            <select name="java-navigator" onchange="top.location.href =
+                this.options[this.selectedIndex].value;">
+            <option disabled selected value>Выберите тип изделия</option>
+            {{range .ProductTypes}}
+            <option value='/?type={{.TypeName}}'>{{.TypeName}}</option>
+            {{end}}
+            </select>
+        </form>
+    {{end}}
+    {{if .Products}}
+     <table>
+        <tr>
+            <th>Заказ</th>
+            <th>Заказчик</th>
+            <th>№ заказа</th>
+        </tr>
+        {{range .Products}}
+        <tr>
+            <td><a href='/order?id={{.ID}}'>{{.Type}}</a></td>
+            <td><a href='/customer?id={{.CustomerId}}'>{{.CustomerFIO}}</a></td>
+            <td>#{{.ID}}</td>
+        </tr>
+        {{end}}
+    </table>
+    {{else}}
+        <p>Здесь ничего нет... пока что!</p>
+    {{end}}
+{{end}}

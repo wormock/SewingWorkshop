@@ -1,0 +1,49 @@
+{{template "base" .}}
+
+
+{{define "title"}}Просмотр{{end}}
+
+{{define "main"}}
+    {{if .Product}}
+        <div class='product'>
+            <div class='metadata'>
+                <strong>{{.Product.Type}}</strong>
+                <span>#{{.Product.ID}}</span>
+            </div>
+            <div class='metadata'>
+                <p>Мастер: {{.Product.MasterFIO}}</p>
+                <p>Заказчик: {{.Product.CustomerFIO}}</p>
+                <p>Размер: {{.Product.Size}}</p>
+                <p>Материал: {{.Product.Material}}</p>
+                Цена: {{.Product.Cost}}
+            </div>
+        </div>
+    {{else}}
+        {{if .Products}}
+            <table>
+                <tr>
+                    <th>Заказ</th>
+                    <th>Тип изделия</th>
+                    <th>Заказчик</th>
+                    <th>Мастер</th>
+                    <th>Размер</th>
+                    <th>Материал</th>
+                    <th>Цена</th>
+                </tr>
+            {{range .Products}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.Type}}</td>
+                    <td>{{.CustomerFIO}}</td>
+                    <td>{{.MasterFIO}}</td>
+                    <td>{{.Size}}</td>
+                    <td>{{.Material}}</td>
+                    <td>{{.Cost}}</td>
+                </tr>
+            {{end}}
+            </table>
+        {{else}}
+            <p>Здесь ничего нет... пока что!</p>
+        {{end}}
+    {{end}}
+{{end}}
