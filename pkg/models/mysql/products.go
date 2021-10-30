@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"SewingWorkshop/pkg/models"
 )
@@ -126,9 +127,37 @@ func (m *ProductModel) GetTypes() ([]*models.ProductType, error) {
 	return productTypes, nil
 }
 
+func (m *ProductModel) LatestWithParapms(params string) ([]*models.Product, error) {
+	params = fmt.Sprintf("WHERE %s", params)
+	stmt := fmt.Sprintf(`SELECT DISTINCT Product.p_id, Product.p_type, Product.p_cost, Product.p_size, Product.p_material, Master.master_id, Client.client_id, Master.master_FIO, Client.client_fio
+	FROM (Product INNER JOIN Master ON Product.p_master = Master.master_id) INNER JOIN Client ON Product.p_customer = Client.client_id %s`, params)
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var products []*models.Product
+
+	for rows.Next() {
+		p := &models.Product{}
+		err = rows.Scan(&p.ID, &p.Type, &p.Cost, &p.Size, &p.Material, &p.MasterId, &p.CustomerId, &p.MasterFIO, &p.CustomerFIO)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
 func (m *ProductModel) LatestWithType(pType string) ([]*models.Product, error) {
-	stmt := `SELECT * FROM Product 
-		WHERE p_type = ($1)`
+	stmt := `SELECT DISTINCT Product.p_id, Product.p_type, Product.p_cost, Product.p_size, Product.p_material, Master.master_id, Client.client_id, Master.master_FIO, Client.client_fio
+	FROM (Product INNER JOIN Master ON Product.p_master = Master.master_id) INNER JOIN Client ON Product.p_customer = Client.client_id
+	WHERE p_type = ($1)`
 
 	rows, err := m.DB.Query(stmt, pType)
 	if err != nil {
@@ -140,7 +169,7 @@ func (m *ProductModel) LatestWithType(pType string) ([]*models.Product, error) {
 
 	for rows.Next() {
 		p := &models.Product{}
-		err = rows.Scan(&p.ID, &p.Type, &p.Cost, &p.Size, &p.Material, &p.MasterId, &p.CustomerId)
+		err = rows.Scan(&p.ID, &p.Type, &p.Cost, &p.Size, &p.Material, &p.MasterId, &p.CustomerId, &p.MasterFIO, &p.CustomerFIO)
 		if err != nil {
 			return nil, err
 		}

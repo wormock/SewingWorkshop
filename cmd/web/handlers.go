@@ -23,6 +23,16 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		products = s
+	}
+	if r.URL.Query().Has("params") {
+		params := r.URL.Query().Get("params")
+		fmt.Println(params)
+		s, err := app.products.LatestWithParapms(params)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		products = s
 	} else {
 		s, err := app.products.Latest()
 		if err != nil {

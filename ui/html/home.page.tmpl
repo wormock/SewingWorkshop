@@ -6,7 +6,7 @@
     <h2>Последние заказы</h2>
     {{if .ProductTypes}}
         Тип изделия:
-        <form>
+        <form name = "select">
             <select name="java-navigator" onchange="top.location.href =
                 this.options[this.selectedIndex].value;">
             <option disabled selected value>Выберите тип изделия</option>
@@ -15,18 +15,23 @@
             {{end}}
             </select>
         </form>
+        <form name="inputBox">
+            <input name="params" type="text" onsubmit="window.location=document.forms[1].params.value"> </input>
+        </form>
     {{end}}
     {{if .Products}}
      <table>
         <tr>
             <th>Заказ</th>
             <th>Заказчик</th>
+            <th>Стоимость</th>
             <th>№ заказа</th>
         </tr>
         {{range .Products}}
         <tr>
             <td><a href='/order?id={{.ID}}'>{{.Type}}</a></td>
             <td><a href='/customer?id={{.CustomerId}}'>{{.CustomerFIO}}</a></td>
+            <td>{{.Cost}}руб.</td>
             <td>#{{.ID}}</td>
         </tr>
         {{end}}
