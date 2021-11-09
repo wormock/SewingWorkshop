@@ -24,7 +24,7 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":8080", "Сетевой адрес веб-сервера")
-	dsn := flag.String("dsn", "host=localhost port=5432 user=evgenijvolkov password=25459198 dbname=ksp sslmode=disable", "Название MySQL источника данных")
+	dsn := flag.String("dsn", "host=localhost port=5432 user=postgres password=25459198 dbname=ksp sslmode=disable", "Название MySQL источника данных")
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)

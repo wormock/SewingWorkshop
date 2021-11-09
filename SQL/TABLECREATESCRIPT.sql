@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS ProductType;
 DROP TABLE IF EXISTS Sizes;
 DROP TABLE IF EXISTS Materials;
 DROP TABLE IF EXISTS Specializations;
-DROP FUNCTION getordersforclientid(integer);
+DROP FUNCTION IF EXISTS getordersforclientid(integer);
 
 CREATE TABLE Client (
 	client_id serial NOT NULL,
