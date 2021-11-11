@@ -3,23 +3,23 @@
 {{define "title"}}Домашняя страница{{end}}
 
 {{define "main"}}
-    <h2>Последние заказы</h2>
-    {{if .ProductTypes}}
-        Тип изделия:
-        <form name = "select">
-            <select name="java-navigator" onchange="top.location.href =
-                this.options[this.selectedIndex].value;">
-            <option disabled selected value>Выберите тип изделия</option>
-            {{range .ProductTypes}}
-            <option value='/?type={{.TypeName}}'>{{.TypeName}}</option>
-            {{end}}
-            </select>
-        </form>
-        <form name="inputBox">
-            <input name="params" type="text" onsubmit="window.location=document.forms[1].params.value"> </input>
-        </form>
-    {{end}}
     {{if .Products}}
+        <h2>Последние заказы</h2>
+            {{if .ProductTypes}}
+                Тип изделия:
+                <form name = "select">
+                    <select name="java-navigator" onchange="top.location.href =
+                        this.options[this.selectedIndex].value;">
+                        <option disabled selected value>Выберите тип изделия</option>
+                            {{range .ProductTypes}}
+                                <option value='/?type={{.TypeName}}'>{{.TypeName}}</option>
+                            {{end}}
+                    </select>
+                </form>
+                <form name="inputBox">
+                    <input name="params" type="text" onsubmit="window.location=document.forms[1].params.value"> </input>
+                </form>
+            {{end}}
      <table>
         <tr>
             <th>Заказ</th>

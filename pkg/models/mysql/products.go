@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"SewingWorkshop/pkg/models"
+
+	mssql "github.com/denisenkom/go-mssqldb"
 )
 
 // ProductModel - Определяем тип который обертывает пул подключения sql.DB
@@ -43,8 +45,64 @@ func (m *ProductModel) Insert(tp string, size string, material string, cost int,
 	return int(id), nil
 }
 
+func (m *ProductModel) AddMaster(fio string, specialization string) error {
+	stmt := `addNewMaster @FIO = "%s", @Specialization = "%s"`
+	_, err := m.DB.Exec(fmt.Sprintf(stmt, fio, specialization))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ProductModel) GetMaster(id int) (*models.Master, error) {
+	stmt := `getMaster @id = %d`
+	row := m.DB.QueryRow(fmt.Sprintf(stmt, id))
+	master := &models.Master{}
+	err := row.Scan(&master.ID, &master.FIO, &master.Specialization)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+	return master, nil
+}
+
+func (m *ProductModel) GetMasters() ([]*models.Master, error) {
+	stmt := `SELECT * FROM Master`
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+	var masters []*models.Master
+	for rows.Next() {
+		m := &models.Master{}
+		err := rows.Scan(&m.ID, &m.FIO, &m.Specialization)
+		if err != nil {
+			return nil, err
+		}
+		masters = append(masters, m)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return masters, nil
+}
+
+func (m *ProductModel) DeleteMasterWithId(id int) (int, error) {
+	stmt := `removeMaster @id = %d`
+	var status mssql.ReturnStatus
+	_, err := m.DB.Exec(fmt.Sprintf(stmt, id), &status)
+	if err != nil {
+		return -1, err
+	}
+	return int(status), nil
+}
+
 func (m *ProductModel) GetOrdersForCustomer(cId int) ([]*models.Product, error) {
-	stmt := `SELECT * FROM getOrdersForClientId($1)`
+	// stmt := `SELECT * FROM getOrdersForClientId($1)`
+	stmt := `EXECUTE getOrdersForClientId @id = $1`
 
 	rows, err := m.DB.Query(stmt, cId)
 	if err != nil {
@@ -73,7 +131,7 @@ func (m *ProductModel) GetOrdersForCustomer(cId int) ([]*models.Product, error) 
 // Get - Метод для возвращения данных заметки по её идентификатору ID.
 func (m *ProductModel) Get(id int) (*models.Product, error) {
 	// SQL запрос для получения данных одной записи.
-	stmt := `SELECT * FROM Product WHERE p_id = ($1)`
+	stmt := `SELECT * FROM Product WHERE p_id = $1`
 
 	// Используем метод QueryRow() для выполнения SQL запроса,
 	// передавая ненадежную переменную id в качестве значения для плейсхолдера
@@ -155,9 +213,7 @@ func (m *ProductModel) LatestWithParapms(params string) ([]*models.Product, erro
 }
 
 func (m *ProductModel) LatestWithType(pType string) ([]*models.Product, error) {
-	stmt := `SELECT DISTINCT Product.p_id, Product.p_type, Product.p_cost, Product.p_size, Product.p_material, Master.master_id, Client.client_id, Master.master_FIO, Client.client_fio
-	FROM (Product INNER JOIN Master ON Product.p_master = Master.master_id) INNER JOIN Client ON Product.p_customer = Client.client_id
-	WHERE p_type = ($1)`
+	stmt := `EXECUTE getLatestWithType @type = $1`
 
 	rows, err := m.DB.Query(stmt, pType)
 	if err != nil {

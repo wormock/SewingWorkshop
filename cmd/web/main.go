@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"flag"
 	"html/template" // Новый импорт
@@ -10,7 +11,8 @@ import (
 
 	"SewingWorkshop/pkg/models/mysql"
 
-	_ "github.com/lib/pq"
+	// _ "github.com/lib/pq"
+	_ "github.com/denisenkom/go-mssqldb"
 )
 
 // Добавляем поле templateCache в структуру зависимостей. Это позволит
@@ -24,7 +26,9 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":8080", "Сетевой адрес веб-сервера")
-	dsn := flag.String("dsn", "host=localhost port=5432 user=postgres password=25459198 dbname=ksp sslmode=disable", "Название MySQL источника данных")
+	dsn := flag.String("dsn", "server=localhost;user id=sa;password=2545V0lk9198;port=1433;database=SewingWorkShop", "Название MSSQL источника данных")
+	//"host=localhost port=5432 user=postgres password=25459198 dbname=ksp sslmode=disable"
+
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -63,11 +67,20 @@ func main() {
 }
 
 func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dsn)
+	// db, err := sql.Open("postgres", dsn)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if err = db.Ping(); err != nil {
+	// 	return nil, err
+	// }
+	// return db, nil
+	db, err := sql.Open("sqlserver", dsn)
 	if err != nil {
 		return nil, err
 	}
-	if err = db.Ping(); err != nil {
+	ctx := context.Background()
+	if err = db.PingContext(ctx); err != nil {
 		return nil, err
 	}
 	return db, nil

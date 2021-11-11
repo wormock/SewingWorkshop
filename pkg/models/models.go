@@ -21,3 +21,13 @@ type Product struct {
 type ProductType struct {
 	TypeName string
 }
+
+type Master struct {
+	ID             int
+	FIO            string
+	Specialization string
+}
+type NewMaster struct {
+	FIO            string
+	Specialization string
+}

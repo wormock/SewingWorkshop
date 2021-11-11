@@ -12,6 +12,9 @@ type templateData struct {
 	Products     []*models.Product
 	ProductType  *models.ProductType
 	ProductTypes []*models.ProductType
+	Master       *models.Master
+	Masters      []*models.Master
+	NewMaster    *models.NewMaster
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {

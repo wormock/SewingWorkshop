@@ -4,46 +4,100 @@
 {{define "title"}}Просмотр{{end}}
 
 {{define "main"}}
-    {{if .Product}}
-        <div class='product'>
-            <div class='metadata'>
-                <strong>{{.Product.Type}}</strong>
-                <span>#{{.Product.ID}}</span>
-            </div>
-            <div class='metadata'>
-                <p>Мастер: {{.Product.MasterFIO}}</p>
-                <p>Заказчик: {{.Product.CustomerFIO}}</p>
-                <p>Размер: {{.Product.Size}}</p>
-                <p>Материал: {{.Product.Material}}</p>
-                Цена: {{.Product.Cost}}
-            </div>
-        </div>
-    {{else}}
-        {{if .Products}}
-            <table>
+{{if .NewMaster}}
+    <h2>Новый мастер</h2>
+    <form name="inputBox" action="/master/add">
+        ФИО мастера: <input name="fio" id="fio" type="text" onsubmit="window.location=document.forms[1].fio.value"></input>
+        Специальность Мастера: <input name="specialization" id="specialization" type="text" onsubmit="window.location=document.forms[1].spec.value"></input>
+        <button>Подтвердить</button>
+    </form>
+    
+{{else}}
+{{if .Master}} 
+    <h2>Информация о мастере</h2>
+    <table>
+        <tr>
+            <th>Номер</th>
+            <th>ФИО мастера</th>
+            <th>Специальность</th>
+        </tr>
+        <tr>
+            <td>{{.Master.ID}}</td>
+            <td>{{.Master.FIO}}</td>
+            <td>{{.Master.Specialization}}</td>
+        </tr>
+    </table>
+    <form name="editMaster" action="/master/edit">
+        Номер Мастера: <input name="stab_id" id="stab_id" type="text" readonly value={{.Master.ID}} onsubmit="window.location=document.forms[1].stab_id.value"></input>
+        Новое ФИО мастера: <input name="edit_fio" id="edit_fio" type="text" onsubmit="window.location=document.forms[1].edit_fio.value"></input>
+        Новая Специальность Мастера: <input name="edit_specialization" id="edit_specialization" type="text" onsubmit="window.location=document.forms[1].edit_specialization.value"></input>
+        <button>Подтвердить</button>
+    </form>
+{{else}}
+{{if .Masters}}
+        <h2>Список мастеров</h2>
+        <a href='/master/add'>Добавить мастера</a>
+        <table>
+            <tr>
+                <th>Номер</th>
+                <th>ФИО мастера</th>
+                <th>Специальность</th>
+                <th></th>
+            </tr>
+            {{range .Masters}}
                 <tr>
-                    <th>Заказ</th>
-                    <th>Тип изделия</th>
-                    <th>Заказчик</th>
-                    <th>Мастер</th>
-                    <th>Размер</th>
-                    <th>Материал</th>
-                    <th>Цена</th>
-                </tr>
-            {{range .Products}}
-                <tr>
-                    <td>{{.ID}}</td>
-                    <td>{{.Type}}</td>
-                    <td>{{.CustomerFIO}}</td>
-                    <td>{{.MasterFIO}}</td>
-                    <td>{{.Size}}</td>
-                    <td>{{.Material}}</td>
-                    <td>{{.Cost}}</td>
+                    <td><a href='/master?id={{.ID}}'>{{.ID}}</a></td>
+                    <td>{{.FIO}}</td>
+                    <td>{{.Specialization}}</td>
+                    <td><a href='/master/delete?id={{.ID}}'>Удалить</a></td>
                 </tr>
             {{end}}
-            </table>
-        {{else}}
-            <p>Здесь ничего нет... пока что!</p>
+        </table>
+{{else}}
+
+{{if .Product}}
+                    <div class='product'>
+                        <div class='metadata'>
+                            <strong>{{.Product.Type}}</strong>
+                            <span>#{{.Product.ID}}</span>
+                        </div>
+                        <div class='metadata'>
+                            <p>Мастер: {{.Product.MasterFIO}}</p>
+                            <p>Заказчик: {{.Product.CustomerFIO}}</p>
+                            <p>Размер: {{.Product.Size}}</p>
+                            <p>Материал: {{.Product.Material}}</p>
+                            Цена: {{.Product.Cost}}
+                        </div>
+                    </div>
+{{else}}
+{{if .Products}}
+                        <table>
+                            <tr>
+                                <th>Заказ</th>
+                                <th>Тип изделия</th>
+                                <th>Заказчик</th>
+                                <th>Мастер</th>
+                                <th>Размер</th>
+                                <th>Материал</th>
+                                <th>Цена</th>
+                            </tr>
+                        {{range .Products}}
+                            <tr>
+                                <td>{{.ID}}</td>
+                                <td>{{.Type}}</td>
+                                <td>{{.CustomerFIO}}</td>
+                                <td>{{.MasterFIO}}</td>
+                                <td>{{.Size}}</td>
+                                <td>{{.Material}}</td>
+                                <td>{{.Cost}}</td>
+                            </tr>
+                        {{end}}
+                        </table>
+{{else}}
+                        <p>Здесь ничего нет... пока что!</p>
+                {{end}}
+            {{end}}
         {{end}}
     {{end}}
+{{end}}
 {{end}}
