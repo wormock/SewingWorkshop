@@ -4,6 +4,10 @@
 {{define "title"}}Просмотр{{end}}
 
 {{define "main"}}
+{{if .ErrorMessage}}
+    <h2>Ошибка:<h2>
+    <br>{{.ErrorMessage.Message}}
+{{else}}
 {{if .NewMaster}}
     <h2>Новый мастер</h2>
     <form name="inputBox" action="/master/add">
@@ -71,6 +75,9 @@
                     </div>
 {{else}}
 {{if .Products}}
+    {{if .ProductCount}}
+    Всего изделий: {{.ProductCount}}
+    {{end}}
                         <table>
                             <tr>
                                 <th>Заказ</th>
@@ -99,5 +106,6 @@
             {{end}}
         {{end}}
     {{end}}
+{{end}}
 {{end}}
 {{end}}

@@ -9,12 +9,14 @@ import (
 
 type templateData struct {
 	Product      *models.Product
+	ProductCount int
 	Products     []*models.Product
 	ProductType  *models.ProductType
 	ProductTypes []*models.ProductType
 	Master       *models.Master
 	Masters      []*models.Master
 	NewMaster    *models.NewMaster
+	ErrorMessage *models.ErrorMessage
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {

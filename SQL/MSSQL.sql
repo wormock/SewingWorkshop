@@ -84,3 +84,14 @@ GO
 DROP PROCEDURE IF EXISTS getLatestWithType
 GO
 CREATE PROCEDURE getLatestWithType @type VARCHAR(30) AS SELECT DISTINCT Product.p_id, Product.p_type, Product.p_cost, Product.p_size, Product.p_material, Master.master_id, Client.client_id, Master.master_FIO, Client.client_fio  FROM ((Product INNER JOIN Master ON Product.p_master = Master.master_id) INNER JOIN Client ON Product.p_customer = Client.client_id) WHERE p_type = @type
+DROP PROCEDURE IF EXISTS editMaster
+GO
+CREATE PROCEDURE editMaster @ID int, @NEWFIO VARCHAR(30), @NEWSPEC VARCHAR(30) AS UPDATE Master SET master_FIO = @NEWFIO, master_specialization = @NEWSPEC WHERE master_id = @id
+GO
+DROP PROCEDURE IF EXISTS upCost
+GO
+CREATE PROCEDURE upCost AS UPDATE Product SET p_cost = p_cost * 1.2
+GO
+DROP PROCEDURE IF EXISTS 
+GO
+CREATE PROCEDURE getProductCountByCustomer @ID int AS SELECT COUNT(*) FROM Product WHERE p_customer = @ID

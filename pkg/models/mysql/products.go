@@ -15,6 +15,26 @@ type ProductModel struct {
 	DB *sql.DB
 }
 
+func (m *ProductModel) GetProductCountByCustomer(id int) (int, error) {
+	stmt := `getProductCountByCustomer @ID = %d`
+	row := m.DB.QueryRow(fmt.Sprintf(stmt, id))
+	count := &models.ProductCount{}
+	err := row.Scan(&count.Count)
+	if err != nil {
+		return -1, err
+	}
+	return count.Count, nil
+}
+
+func (m *ProductModel) UpdatePrice() error {
+	stmt := `upCost`
+	_, err := m.DB.Exec(stmt)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Insert - Метод для создания новой заметки в базе дынных.
 func (m *ProductModel) Insert(tp string, size string, material string, cost int, master int, customer int) (int, error) {
 	// Ниже будет SQL запрос, который мы хотим выполнить. Мы разделили его на две строки
@@ -48,6 +68,15 @@ func (m *ProductModel) Insert(tp string, size string, material string, cost int,
 func (m *ProductModel) AddMaster(fio string, specialization string) error {
 	stmt := `addNewMaster @FIO = "%s", @Specialization = "%s"`
 	_, err := m.DB.Exec(fmt.Sprintf(stmt, fio, specialization))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ProductModel) EditMaster(id int, newFio string, newSpec string) error {
+	stmt := `editMaster @ID = %d,@NEWFIO = "%s", @NEWSPEC = "%s"`
+	_, err := m.DB.Exec((fmt.Sprintf(stmt, id, newFio, newSpec)))
 	if err != nil {
 		return err
 	}

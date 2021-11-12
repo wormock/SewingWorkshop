@@ -18,6 +18,10 @@ type Product struct {
 	CustomerFIO string
 }
 
+type ProductCount struct {
+	Count int
+}
+
 type ProductType struct {
 	TypeName string
 }
@@ -30,4 +34,8 @@ type Master struct {
 type NewMaster struct {
 	FIO            string
 	Specialization string
+}
+
+type ErrorMessage struct {
+	Message string
 }

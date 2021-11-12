@@ -31,6 +31,13 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		products = s
+	} else if r.URL.Query().Has("updatePrice") {
+		err := app.products.UpdatePrice()
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
 		s, err := app.products.Latest()
 		if err != nil {
@@ -68,9 +75,16 @@ func (app *application) showCustomerOrders(w http.ResponseWriter, r *http.Reques
 		}
 		return
 	}
+	count, err := app.products.GetProductCountByCustomer(id)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	// Используем помощника render() для отображения шаблона.
 	app.render(w, r, "show.page.tmpl", &templateData{
-		Products: s,
+		Products:     s,
+		ProductCount: count,
 	})
 }
 
@@ -124,6 +138,22 @@ func (app *application) createOrder(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/order?id=%d", id), http.StatusSeeOther)
 }
 
+func (app *application) editMaster(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("stab_id"))
+	if err != nil || id < 0 {
+		app.notFound(w)
+		return
+	}
+	newFio := r.URL.Query().Get("edit_fio")
+	newSpec := r.URL.Query().Get("edit_specialization")
+	err = app.products.EditMaster(id, newFio, newSpec)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/master?id=%d", id), http.StatusSeeOther)
+}
+
 func (app *application) showMasters(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Has("id") {
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -153,11 +183,6 @@ func (app *application) showMasters(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) deleteMaster(w http.ResponseWriter, r *http.Request) {
-	// if r.Method != http.MethodPost {
-	// 	w.Header().Set("Allow", http.MethodPost)
-	// 	app.clientError(w, http.StatusMethodNotAllowed)
-	// 	return
-	// }
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 0 {
 		app.notFound(w)
@@ -168,8 +193,22 @@ func (app *application) deleteMaster(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	//TODO make code
-	fmt.Println(code)
+	if code != 0 {
+		var msg string
+		if code == 1 {
+			msg = "Удаление невозможно из-за наличия связанных записей в подчиненных таблицах"
+		} else {
+			msg = "В таблице БД нет информации о заданном мастере"
+		}
+		errMessage := &models.ErrorMessage{
+			Message: msg,
+		}
+		app.render(w, r, "show.page.tmpl", &templateData{
+			ErrorMessage: errMessage,
+		})
+		return
+	}
+
 	http.Redirect(w, r, "/master", http.StatusSeeOther)
 }
 
@@ -192,5 +231,4 @@ func (app *application) addMaster(w http.ResponseWriter, r *http.Request) {
 			NewMaster: nMaster,
 		})
 	}
-
 }
