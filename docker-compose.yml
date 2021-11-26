@@ -10,3 +10,11 @@ services:
    ACCEPT_EULA: "Y"
   volumes:
    - ./SQL:/var/lib/mssql/sqlScripts/:z
+
+
+
+
+
+
+
+

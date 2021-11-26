@@ -92,6 +92,6 @@ DROP PROCEDURE IF EXISTS upCost
 GO
 CREATE PROCEDURE upCost AS UPDATE Product SET p_cost = p_cost * 1.2
 GO
-DROP PROCEDURE IF EXISTS 
+DROP PROCEDURE IF EXISTS getProductCountByCustomer
 GO
 CREATE PROCEDURE getProductCountByCustomer @ID int AS SELECT COUNT(*) FROM Product WHERE p_customer = @ID
