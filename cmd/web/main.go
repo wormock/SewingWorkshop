@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"flag"
-	"html/template" // Новый импорт
+	"html/template"
 	"log"
 	"net/http"
 	"os"
